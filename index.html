@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Manajemen Stok Barang</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #b3d4fc;
+    margin: 0;
+    padding: 0;
+  }
+
+  .container {
+    width: 95%;
+    max-width: 1100px;
+    margin: 40px auto;
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+
+  h2 {
+    text-align: center;
+    color: #003399;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+
+  #logo {
+    width: 140px;
+    height: auto;
+    cursor: pointer;
+    border-radius: 12px;
+    transition: transform 0.3s;
+  }
+
+  #logo:hover { transform: scale(1.05); }
+
+  #logoInput { display: none; }
+
+  #userInfo {
+    text-align: center;
+    margin-bottom: 10px;
+    font-weight: bold;
+    color: #333;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th, td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: center;
+  }
+
+  th {
+    background-color: #0056d6;
+    color: white;
+  }
+
+  input[type="text"], input[type="number"] {
+    width: 90%;
+    padding: 6px;
+    text-align: center;
+  }
+
+  button {
+    background-color: #ff3c3c;
+    color: white;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  button:hover { background-color: #d42b2b; }
+
+  #addSection {
+    text-align: center;
+    margin: 20px 0;
+  }
+
+  #addSection h3 { color: #003399; }
+
+  .add-form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+  }
+
+  .add-form input {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 200px;
+    text-align: center;
+  }
+
+  .add-form button {
+    background-color: #0056d6;
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  .add-form button:hover { background-color: #0041a8; }
+
+  .search-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 10px auto 25px;
+  }
+
+  #searchInput {
+    width: 60%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    text-align: center;
+    font-size: 15px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    transition: all 0.2s ease;
+  }
+
+  #searchInput:focus {
+    outline: none;
+    border-color: #0056d6;
+    box-shadow: 0 0 5px rgba(0,86,214,0.3);
+  }
+
+  input.login, input.pass {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 8px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+
+  .btn {
+    width: 100%;
+    padding: 10px;
+    background-color: #0056d6;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  .btn:hover { background-color: #0041a8; }
+
+  a { color: #0056d6; text-decoration: none; }
+
+  #logout {
+    width: 100%;
+    background-color: #ff3c3c;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    border-radius: 6px;
+    font-weight: bold;
+    margin-top: 30px;
+    cursor: pointer;
+  }
+
+  #logout:hover { background-color: #d32f2f; }
+
+  .aksi-btn {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .edit-btn { background-color: #00a82d; }
+  .edit-btn:hover { background-color: #008c24; }
+
+  .low-stock { background-color: #ffe6e6 !important; }
+
+  .warning {
+    color: red;
+    font-weight: bold;
+    font-size: 13px;
+  }
+
+  #modeBanner {
+    text-align: center;
+    font-weight: bold;
+    color: white;
+    padding: 10px;
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="container" id="loginPage">
+  <h2>Login</h2>
+  <input type="text" id="loginUser" placeholder="Username" class="login">
+  <input type="password" id="loginPass" placeholder="Password" class="pass">
+  <select id="loginRole" class="login" style="margin-bottom:10px;">
+    <option value="user">User Biasa</option>
+    <option value="admin">Admin</option>
+  </select>
+  <button class="btn" onclick="login()">Login</button>
+  <p style="text-align:center;">Belum punya akun? <a href="#" onclick="showRegister()">Daftar</a></p>
+</div>
+
+<!-- REGISTER -->
+<div class="container" id="registerPage" style="display:none;">
+  <h2>Daftar Akun</h2>
+  <input type="text" id="regUser" placeholder="Buat Username" class="login">
+  <input type="password" id="regPass" placeholder="Buat Password" class="pass">
+  <input type="text" id="adminKey" placeholder="Kode Rahasia Admin (opsional)" class="login">
+  <button class="btn" onclick="register()">Daftar</button>
+  <p style="text-align:center;">Sudah punya akun? <a href="#" onclick="showLogin()">Login</a></p>
+</div>
+
+<!-- MAIN PAGE -->
+<div id="modeBanner"></div>
+<div class="container" id="mainPage" style="display:none;">
+  <div id="userInfo"></div>
+  <h2>
+    <img id="logo" src="https://cdn-icons-png.flaticon.com/512/3443/3443338.png" title="Klik untuk ganti logo">
+    MANAJEMEN STOK BARANG
+  </h2>
+  <input type="file" id="logoInput" accept="image/*">
+
+  <div id="addSection">
+    <h3>Tambah Barang</h3>
+    <div class="add-form">
+      <input type="text" id="namaBarang" placeholder="Nama Barang">
+      <input type="number" id="stokBarang" placeholder="Stok Awal" min="0">
+      <button onclick="tambahBarang()">Tambah</button>
+    </div>
+  </div>
+
+  <div class="search-container">
+    <input type="text" id="searchInput" placeholder="Cari nama barang..." onkeyup="searchBarang()">
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>No</th>
+        <th>Nama Barang</th>
+        <th>Stok Awal</th>
+        <th>Barang Masuk</th>
+        <th>Barang Keluar</th>
+        <th>Stok Saat Ini</th>
+        <th>Aksi</th>
+      </tr>
+    </thead>
+    <tbody id="tabelBody"></tbody>
+  </table>
+
+  <div id="logout" onclick="logout()">Logout</div>
+</div>
+
+<script>
+/*
+  Versi gabungan:
+  - Dasar UI dari kode kamu
+  - Semua penyimpanan pindah ke IndexedDB: users, barang, session, logo (di users)
+  - Stok diupdate berdasarkan id barang (agar aman walau tabel disort)
+  - Auto-login berdasarkan session di IndexedDB
+*/
+
+// ---------- IndexedDB setup ----------
+let db;
+const DB_NAME = "stokBarangDB_v2";
+const DB_VERSION = 1;
+const req = indexedDB.open(DB_NAME, DB_VERSION);
+
+req.onupgradeneeded = function(e) {
+  db = e.target.result;
+  if (!db.objectStoreNames.contains("users")) {
+    const uStore = db.createObjectStore("users", { keyPath: "username" });
+    // optional index by role if needed later
+    uStore.createIndex("role", "role", { unique: false });
+  }
+  if (!db.objectStoreNames.contains("barang")) {
+    // use autoIncrement id for stable identity
+    const bStore = db.createObjectStore("barang", { keyPath: "id", autoIncrement: true });
+    bStore.createIndex("nama", "nama", { unique: false });
+  }
+  if (!db.objectStoreNames.contains("session")) {
+    db.createObjectStore("session", { keyPath: "key" });
+  }
+};
+
+req.onsuccess = function(e) {
+  db = e.target.result;
+  // after db ready, try auto login (session)
+  autoLogin();
+};
+
+req.onerror = function(e) {
+  alert("Gagal membuka database: " + e.target.error);
+};
+
+// ---------- Helpers for IndexedDB ----------
+function tx(storeName, mode="readonly") {
+  return db.transaction(storeName, mode).objectStore(storeName);
+}
+
+// users
+function addUserToDB(userObj, cb) {
+  const t = db.transaction("users", "readwrite");
+  t.objectStore("users").add(userObj).onsuccess = () => { if (cb) cb(); };
+}
+function getUserFromDB(username, cb) {
+  const r = tx("users").get(username);
+  r.onsuccess = () => cb(r.result);
+}
+function updateUserInDB(userObj, cb) {
+  const t = db.transaction("users", "readwrite");
+  t.objectStore("users").put(userObj).onsuccess = () => { if (cb) cb(); };
+}
+
+// session
+function setSession(user, role, cb) {
+  const t = db.transaction("session", "readwrite");
+  t.objectStore("session").put({ key: "current", user, role }).onsuccess = () => { if (cb) cb(); };
+}
+function clearSession(cb) {
+  const t = db.transaction("session", "readwrite");
+  t.objectStore("session").delete("current").onsuccess = () => { if (cb) cb(); };
+}
+function getSession(cb) {
+  const r = tx("session").get("current");
+  r.onsuccess = () => cb(r.result);
+}
+
+// barang
+function addBarangToDB(item, cb) {
+  const t = db.transaction("barang", "readwrite");
+  t.objectStore("barang").add(item).onsuccess = () => { if (cb) cb(); };
+}
+function putBarangToDB(item, cb) {
+  const t = db.transaction("barang", "readwrite");
+  t.objectStore("barang").put(item).onsuccess = () => { if (cb) cb(); };
+}
+function getBarangAll(cb) {
+  const arr = [];
+  const store = db.transaction("barang", "readonly").objectStore("barang");
+  const req = store.openCursor();
+  req.onsuccess = function(e) {
+    const cursor = e.target.result;
+    if (cursor) {
+      arr.push(cursor.value);
+      cursor.continue();
+    } else {
+      cb(arr);
+    }
+  };
+}
+function getBarangById(id, cb) {
+  const r = tx("barang").get(id);
+  r.onsuccess = () => cb(r.result);
+}
+function deleteBarangById(id, cb) {
+  const t = db.transaction("barang", "readwrite");
+  t.objectStore("barang").delete(id).onsuccess = () => { if (cb) cb(); };
+}
+
+// ---------- UI helpers ----------
+function showRegister(){ loginPage.style.display="none"; registerPage.style.display="block"; }
+function showLogin(){ registerPage.style.display="none"; loginPage.style.display="block"; }
+
+// ---------- Register / Login ----------
+function register(){
+  const u = regUser.value.trim();
+  const p = regPass.value.trim();
+  const key = adminKey.value.trim();
+  if (!u || !p) return alert("Isi semua kolom!");
+  getUserFromDB(u, existing => {
+    if (existing) return alert("Username sudah terdaftar!");
+    const role = (key === "ADMIN123") ? "admin" : "user";
+    const userObj = { username: u, pass: p, role: role, logoData: null };
+    addUserToDB(userObj, () => {
+      alert("Akun berhasil dibuat sebagai "+role.toUpperCase()+"!");
+      showLogin();
+    });
+  });
+}
+
+function login(){
+  const u = loginUser.value.trim();
+  const p = loginPass.value.trim();
+  if (!u || !p) return alert("Isi username & password!");
+  getUserFromDB(u, user => {
+    if (!user) return alert("Username atau password salah!");
+    if (user.pass !== p) return alert("Username atau password salah!");
+    // set session in DB
+    setSession(u, user.role, () => {
+      // update currentUser/currentRole variables and show main
+      currentUser = u;
+      currentRole = user.role;
+      showMain();
+      muatLogo();
+    });
+  });
+}
+
+function logout(){
+  clearSession(() => {
+    currentUser = null;
+    currentRole = "user";
+    mainPage.style.display = "none";
+    loginPage.style.display = "block";
+  });
+}
+
+// ---------- Barang functions (use id) ----------
+function tampilkanTabel(f="") {
+  getBarangAll(data => {
+    // sort by nama
+    const d = data.filter(x => (x.nama||"").toLowerCase().includes(f.toLowerCase())).sort((a,b) => (a.nama||"").localeCompare(b.nama||""));
+    const b = tabelBody;
+    b.innerHTML = "";
+    d.forEach((x,i) => {
+      b.innerHTML += `<tr class="${(x.stok||0)<5?'low-stock':''}">
+        <td>${i+1}</td>
+        <td>${x.nama}</td>
+        <td>${x.stok}</td>
+        <td><input type="number" min="0" value="0" onchange="barangMasuk(${x.id}, this.value)"></td>
+        <td><input type="number" min="0" value="0" onchange="barangKeluar(${x.id}, this.value)"></td>
+        <td>${x.stok} ${x.stok==1?"<div class='warning'>⚠ Harus menambah stok!</div>":""}</td>
+        <td>${currentRole==="admin"?
+          `<div class='aksi-btn'><button class='edit-btn' onclick='editBarang(${x.id})'>Edit</button><button onclick='hapusBarang(${x.id})'>Hapus</button></div>`:
+          "<i>Hanya Admin</i>"
+        }</td></tr>`;
+    });
+  });
+}
+
+function tambahBarang(){
+  if (currentRole !== "admin") return alert("Hanya admin yang bisa menambah barang!");
+  const n = namaBarang.value.trim();
+  let s = parseInt(stokBarang.value);
+  if (!n) return alert("Isi nama barang!");
+  if (isNaN(s) || s < 0) s = 0;
+  addBarangToDB({ nama: n, stok: s }, () => { tampilkanTabel(); });
+  namaBarang.value = "";
+  stokBarang.value = "";
+}
+
+function barangMasuk(id, v) {
+  const tambah = parseInt(v) || 0;
+  if (tambah <= 0) return;
+  getBarangById(id, item => {
+    if (!item) return;
+    item.stok = (item.stok || 0) + tambah;
+    putBarangToDB(item, () => { tampilkanTabel(); });
+  });
+}
+
+function barangKeluar(id, v) {
+  const keluar = parseInt(v) || 0;
+  if (keluar <= 0) return;
+  getBarangById(id, item => {
+    if (!item) return;
+    item.stok = (item.stok || 0) - keluar;
+    if (item.stok < 0) item.stok = 0;
+    putBarangToDB(item, () => { tampilkanTabel(); });
+  });
+}
+
+function editBarang(id) {
+  if (currentRole !== "admin") return alert("Hanya admin yang bisa mengedit!");
+  getBarangById(id, item => {
+    if (!item) return;
+    const n = prompt("Edit nama barang:", item.nama);
+    if (n && n.trim() !== "") {
+      item.nama = n.trim();
+      putBarangToDB(item, () => tampilkanTabel());
+    }
+  });
+}
+
+function hapusBarang(id) {
+  if (currentRole !== "admin") return alert("Hanya admin yang bisa menghapus!");
+  if (!confirm("Yakin ingin menghapus barang ini?")) return;
+  deleteBarangById(id, () => tampilkanTabel());
+}
+
+function searchBarang(){ const v = searchInput.value; tampilkanTabel(v); }
+
+// ---------- Logo upload per-user (simpan ke users.logoData) ----------
+const logoInput = document.getElementById("logoInput"), logoImg = document.getElementById("logo");
+logoImg.addEventListener("click", ()=> logoInput.click());
+
+logoInput.addEventListener("change", e => {
+  const f = e.target.files[0]; if (!f) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const dataUrl = ev.target.result;
+    logoImg.src = dataUrl;
+    // save into user's record
+    if (!currentUser) return;
+    getUserFromDB(currentUser, user => {
+      if (!user) return;
+      user.logoData = dataUrl;
+      updateUserInDB(user, () => { /* saved */ });
+    });
+  };
+  reader.readAsDataURL(f);
+});
+
+function muatLogo() {
+  if (!currentUser) return;
+  getUserFromDB(currentUser, user => {
+    if (!user) return;
+    if (user.logoData) logoImg.src = user.logoData;
+    else logoImg.src = "https://cdn-icons-png.flaticon.com/512/3443/3443338.png";
+  });
+}
+
+// ---------- Auto-login & showMain ----------
+let currentUser = null;
+let currentRole = "user";
+
+function showMain(){
+  loginPage.style.display = "none";
+  registerPage.style.display = "none";
+  mainPage.style.display = "block";
+  // read session to get user & role
+  getSession(s => {
+    if (s && s.user) {
+      currentUser = s.user;
+      currentRole = s.role || "user";
+      userInfo.innerText = "Login sebagai: "+currentUser+" ("+currentRole.toUpperCase()+")";
+      muatLogo();
+      tampilkanTabel();
+      document.getElementById("addSection").style.display = (currentRole==="admin") ? "block" : "none";
+      document.getElementById("modeBanner").style.background = (currentRole==="admin") ? "red" : "#0056d6";
+      document.getElementById("modeBanner").innerText = (currentRole==="admin") ? "👑 MODE ADMIN AKTIF" : "👤 MODE USER (TERBATAS)";
+    } else {
+      // fallback
+      loginPage.style.display = "block";
+      mainPage.style.display = "none";
+    }
+  });
+}
+
+function autoLogin() {
+  // if session exists, show main; else show login
+  getSession(s => {
+    if (s && s.user) {
+      currentUser = s.user;
+      currentRole = s.role || "user";
+      showMain();
+    } else {
+      // no session: show login screen
+      showLogin();
+    }
+  });
+}
+
+// ---------- window onload: ensure db ready; if db not ready yet, req.onsuccess will call autoLogin ----------
+window.addEventListener("load", () => {
+  // if db already opened, autoLogin already called in onsuccess
+  if (db) autoLogin();
+});
+</script>
+</body>
+</html>
